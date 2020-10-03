@@ -1852,7 +1852,7 @@ class Medoo
 
 
  //echo "欢迎使用sp站点获取工具\n";
-// echo "使用方法./sp id 站点字母,   如 ./sp 2 jane 就困设置id2为sharepoint 站点";
+ echo "使用方法./sp id 站点字母,   如 ./sp 2 jane 就设置id2为sharepoint 站点";
  class fetch
 {
     public static $headers = 'User-Agent:Mozilla/5.0 (Windows NT 6.1) AppleWebKit/537.36 (KHTML, like Gecko) Chrome/56.0.2924.87 Safari/537.36';
@@ -2134,11 +2134,25 @@ class Medoo
 function get_accesstoken($refresh_token,$client_id,$client_secret,$redirect_uri)
 {
     
-    $request['url'] = 'https://login.chinacloudapi.cn/common/oauth2/v2.0/token';
+    $request['url'] = 'https://login.microsoftonline.com';
     $request['post_data'] = "client_id={$client_id}&redirect_uri={$redirect_uri}&client_secret={$client_secret}&refresh_token={$refresh_token}&grant_type=refresh_token";
     $request['headers'] = 'Content-Type: application/x-www-form-urlencoded';
     $resp = fetch::post($request);
-    $data = json_decode($resp->content, true);
+	$data = json_decode($resp->content, true);
+	if($data["access_token"]==NULl||$data["access_token"]==""){
+		echo "不是国际版是世纪互联";
+		$request['url'] = 'https://login.chinacloudapi.cn/common/oauth2/v2.0/token';
+		$resp = fetch::post($request);
+		$data = json_decode($resp->content, true);
+
+		if($data["access_token"]==NULl||$data["access_token"]==""){
+
+			exit("国际版国内版都没有找到");
+		}
+		return ($data["access_token"]);
+
+
+	}
 
   return ($data["access_token"]);
 
